@@ -221,10 +221,7 @@ export default function Register() {
                             className={`
                                 w-full pl-10 pr-12 py-2 rounded-lg border 
                                 text-black peer 
-                                ${errors.password 
-                                    ? 'border-red-500 focus:ring-red-500' 
-                                    : 'border-gray-300 focus:border-indigo-500'
-                                } 
+                                ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500'} 
                                 focus:outline-none focus:ring-2 focus:ring-opacity-50
                             `}
                         />
@@ -238,10 +235,7 @@ export default function Register() {
                                 peer-focus:scale-75 
                                 peer-focus:-translate-y-4
                                 transition-all duration-300
-                                ${errors.password 
-                                    ? 'text-red-500' 
-                                    : 'text-gray-500'
-                                }
+                                ${errors.password ? 'text-red-500' : 'text-gray-500'}
                                 bg-white px-1 ml-1
                             `}
                         >
@@ -262,6 +256,7 @@ export default function Register() {
                             <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                         )}
                     </div>
+
 
                     <button 
                         type="submit" 

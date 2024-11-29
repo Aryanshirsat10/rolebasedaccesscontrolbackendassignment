@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Shield, LogOut, Edit, Lock, Gift } from 'lucide-react';
 import api, { setAuthToken } from '../utils/api';
+import Cookies from 'js-cookie';
 
 export default function Profile() {
     const [user, setUser] = useState(null);
@@ -10,13 +11,12 @@ export default function Profile() {
     const router = useRouter();
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        router.push('/login');
+        Cookies.remove('token');
+        router.replace('/login');
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        console.log(token);
+        const token = Cookies.get('token');
         if (!token) {
             router.push('/login');
             return;
@@ -28,10 +28,9 @@ export default function Profile() {
             try {
                 console.log("Making API call to /users/me...");
                 const res = await api.get('/users/me');
-                console.log("User fetched successfully:", res.data);
                 setUser(res.data);
             } catch (error) {
-                console.error("API call failed:", error.response?.data || error.message);
+                console.log("API call failed:", error.response?.data || error.message);
                 router.push('/login');
             }
         };
@@ -47,7 +46,7 @@ export default function Profile() {
             </div>
         </div>
     );
-    console.log(user);
+
     if (!user) return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
             <div className="text-center">
@@ -125,25 +124,6 @@ export default function Profile() {
                                     </p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="flex space-x-4 mt-6">
-                            <button 
-                                className="flex-1 bg-indigo-600 text-white py-3 rounded-lg 
-                                           hover:bg-indigo-700 transition flex items-center 
-                                           justify-center space-x-2"
-                            >
-                                <Edit className="w-5 h-5" />
-                                <span>Edit Profile</span>
-                            </button>
-                            <button 
-                                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg 
-                                           hover:bg-gray-200 transition flex items-center 
-                                           justify-center space-x-2"
-                            >
-                                <Lock className="w-5 h-5" />
-                                <span>Change Password</span>
-                            </button>
                         </div>
                     </div>
                 </div>

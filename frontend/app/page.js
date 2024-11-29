@@ -1,8 +1,46 @@
+"use client"
 import Link from 'next/link';
 import Navbar from '@/app/components/Navbar';
 import { Lock, UserPlus, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
+import api from './utils/api';
 
 export default function Home() {
+    const router = useRouter();
+    useEffect(() => {
+        const token = Cookies.get('token'); // Retrieve the token from cookies
+
+        if (token) {
+            // Verify the token by making an API request
+            const checkToken = async () => {
+                try {
+                    const response = await api.get('/users/me', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    // Check the role returned from the API response
+                    const userRole = response.data.role;
+
+                    // Route based on the user's role
+                    if (userRole === 'Admin') {
+                        router.push('/admin'); // Redirect to the Admin Dashboard
+                    } else {
+                        router.push('/profile'); // Redirect to the User Profile page
+                    }
+                } catch (error) {
+                    // If token is invalid or expired, redirect to login page
+                    console.error('Error validating token or fetching user data:', error);
+                    router.push('/login');
+                }
+            };
+
+            checkToken();
+        }
+    }, [router]);
+
+    
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
             <Navbar />
@@ -22,7 +60,7 @@ export default function Home() {
                     
                     <div className="flex justify-center">
                         <Link 
-                            href="/register" 
+                            href="/login" 
                             className="group flex items-center space-x-3 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out"
                         >
                             <UserPlus className="w-5 h-5" />

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, AlertTriangle, CheckCircle, LogIn } from 'lucide-react';
 import api, { setAuthToken } from '../utils/api';
+import Cookies from 'js-cookie';
 
 export default function Login() {
     const [form, setForm] = useState({ email: '', password: '' });
@@ -50,19 +51,25 @@ export default function Login() {
         try {
             setIsSubmitting(true);
             const res = await api.post('/auth/login', form);
-            console.log(res);
             const token = res.data.token;
-            console.log(token);
-            localStorage.setItem('token', token);
+            const role = res.data.role;
+            Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
             setAuthToken(token);
             
             // Optional: Show success message before redirecting
             setMessage('Login successful! Redirecting...');
-            
-            // Short delay to show success message
-            setTimeout(() => {
-                router.push('/profile');
-            }, 1000);
+            if(role === "Admin"){
+                setTimeout(() => {
+                    router.push('/admin');
+                }, 1000);
+            }
+            else{
+
+                // Short delay to show success message
+                setTimeout(() => {
+                    router.push('/profile');
+                }, 1000);
+            }
         } catch (error) {
             setMessage(error.response?.data?.message || 'Login failed. Please check your credentials.');
             setIsSubmitting(false);

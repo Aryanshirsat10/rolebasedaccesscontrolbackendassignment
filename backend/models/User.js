@@ -8,6 +8,10 @@ const User = sequelize.define('User', {
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
     role: { type: DataTypes.ENUM('Admin', 'Moderator', 'User'), defaultValue: 'User' },
+    permissions: { 
+        type: DataTypes.JSON, 
+        defaultValue: {} // Default to empty permissions
+    },
 },{
         timestamps: true,
     }
@@ -15,8 +19,18 @@ const User = sequelize.define('User', {
 
 // Hash password before saving
 User.beforeCreate(async (user) => {
+    // Check if this is the first user being created
+    const userCount = await User.count();
+
+    // If no users exist, set the role to 'Admin' for the first user
+    if (userCount === 0) {
+        user.role = 'Admin';
+    }
+
+    // Hash the password before saving
     user.password = await bcrypt.hash(user.password, 10);
 });
+
 
 // Compare hashed password
 User.prototype.comparePassword = async function (password) {

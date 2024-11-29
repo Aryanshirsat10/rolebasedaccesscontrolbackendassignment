@@ -1,4 +1,5 @@
 "use client"
+import Cookies from 'js-cookie';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -6,7 +7,7 @@ export default function Navbar() {
     const router = useRouter();
 
     const logout = () => {
-        localStorage.removeItem('token');
+        Cookies.remove('token');
         router.push('/login');
     };
 
